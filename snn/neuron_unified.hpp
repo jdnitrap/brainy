@@ -31,6 +31,7 @@ struct SnnConfig {
     bool short_term = false;      // Tsodyks-Markram facilitation / depression
     bool structural = false;      // pruning and growth of synapses
     bool reward_modulation = false;  // STDP goes to eligibility traces, reward() applies it
+    bool adaptive_threshold = false; // each spike makes the neuron harder to fire (slowly recovers)
 
     // ---- synapses ----
     float syn_gain = 30.0f;       // current of a weight-1 synapse at the peak of its PSC
@@ -53,6 +54,12 @@ struct SnnConfig {
     float tau_rate = 1000.0f;     // time window of the rate estimate (ms)
     float homeostasis_rate = 0.0001f;   // per step: scaling acts over seconds, learning over ms
     float scale_min = 0.1f, scale_max = 4.0f;
+
+    // ---- adaptive threshold (intrinsic plasticity) ----
+    // Modelled as a hyperpolarising bias current theta: +theta_plus per spike,
+    // decaying with tau_theta. It is learned state: reset() keeps it.
+    float theta_plus = 0.05f;
+    float tau_theta = 1e7f;
 
     // ---- structural plasticity ----
     int structural_interval = 1000;  // steps between prune / grow passes
@@ -103,6 +110,7 @@ public:
 
     bool spiked = false;
     int last_spike_time = -1000000;
+    float theta = 0.0f;             // adaptive threshold bias (kept by reset_state)
 
     explicit UnifiedNeuron(NeuronType type = NeuronType::REGULAR_SPIKING) : type_(type) {
         switch (type) {
@@ -125,6 +133,10 @@ public:
                    int t, const SnnConfig& cfg) {
         spiked = false;
         float input = soma_input;
+        if (cfg.adaptive_threshold) {
+            theta *= std::exp(-1.0f / cfg.tau_theta);
+            input -= theta;
+        }
 
         if (cfg.phase2) {
             updateDendrites(apical_input, basal_input, t, cfg);
@@ -153,6 +165,7 @@ public:
             v = c;
             u += d;
             last_spike_time = t;
+            if (cfg.adaptive_threshold) theta += cfg.theta_plus;
             if (cfg.phase2) bap = 1.0f;
         }
     }

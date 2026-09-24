@@ -484,6 +484,56 @@ static void test_reset() {
           "reset clears time, currents and voltages");
 }
 
+static void test_experiment_helpers() {
+    section("fixed synapses, normalisation, adaptive threshold");
+    {
+        UnifiedNetwork net(3);
+        for (int i = 0; i < 3; ++i) net.addNeuron(i, NeuronType::REGULAR_SPIKING);
+        net.enableHomeostasis(false);
+        net.connect(0, 2, 0.1f);
+        net.connect(1, 2, 0.1f);
+        net.setPlastic(1, 2, false);
+        for (int t = 0; t < 30; ++t) {
+            if (t == 10) { net.forceSpike(0); net.forceSpike(1); }
+            if (t == 15) net.forceSpike(2);
+            net.step();
+        }
+        CHECK(net.getSynapseWeight(0, 2) > 0.1f && net.getSynapseWeight(1, 2) == 0.1f,
+              "a fixed synapse is left alone by STDP (plastic %.4f, fixed %.4f)", net.getSynapseWeight(0, 2),
+              net.getSynapseWeight(1, 2));
+        float before = net.normalizeIncoming(2, 0.5f);
+        float after = net.getSynapseWeight(0, 2);
+        CHECK(std::fabs(before - 0.135f) < 0.01f && std::fabs(after - 0.5f) < 1e-4f && net.getSynapseWeight(1, 2) == 0.1f,
+              "normalisation rescales only plastic inputs (sum %.3f -> 0.5, fixed stays 0.1)", before);
+    }
+    {
+        auto count = [](bool adaptive, int* after_reset) {
+            UnifiedNetwork net(1);
+            net.addNeuron(0, NeuronType::REGULAR_SPIKING);
+            net.enableHomeostasis(false);
+            net.enableAdaptiveThreshold(adaptive);
+            net.config().theta_plus = 0.5f;
+            int first = 0, last = 0;
+            for (int t = 0; t < 2000; ++t) {
+                net.stimulate(0, 10);
+                net.step();
+                if (t < 500) first += net.getNeuronSpiked(0);
+                if (t >= 1500) last += net.getNeuronSpiked(0);
+            }
+            net.reset();
+            *after_reset = 0;
+            for (int t = 0; t < 500; ++t) { net.stimulate(0, 10); net.step(); *after_reset += net.getNeuronSpiked(0); }
+            return std::make_pair(first, last);
+        };
+        int ra = 0, rn = 0;
+        auto a = count(true, &ra), n = count(false, &rn);
+        CHECK(a.second < a.first / 2 && n.second * 10 >= n.first * 7,
+              "adaptive threshold: firing falls %d -> %d per 500 ms (without: %d -> %d)", a.first, a.second, n.first,
+              n.second);
+        CHECK(ra < rn / 2, "the threshold is learned state: reset() keeps it (%d vs %d spikes)", ra, rn);
+    }
+}
+
 static void test_random_network() {
     section("random E/I network");
     for (int p2 = 0; p2 < 2; ++p2) {
@@ -522,6 +572,7 @@ int main() {
     test_dendrites();
     test_structural();
     test_reset();
+    test_experiment_helpers();
     test_random_network();
     std::printf("\n%d passed, %d failed\n", g_pass, g_fail);
     return g_fail ? 1 : 0;

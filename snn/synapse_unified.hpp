@@ -36,6 +36,7 @@ public:
 
     int last_pre_time = -1000000;   // for structural plasticity
     bool alive = true;
+    bool plastic = true;            // false: STDP and reward leave this synapse alone
 
     UnifiedSynapse() = default;
     UnifiedSynapse(int pre_, int post_, float w, bool inh, Target tgt)

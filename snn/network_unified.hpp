@@ -67,6 +67,28 @@ public:
         }
     }
 
+    // Fixed synapses (wiring such as lateral inhibition) are not changed by
+    // STDP, reward or pruning.
+    void setPlastic(int pre, int post, bool plastic) {
+        if (UnifiedSynapse* s = find(pre, post)) s->plastic = plastic;
+    }
+
+    // Rescales the plastic excitatory inputs of `post` so their weights sum to
+    // `total` (weight normalisation, as in Diehl & Cook 2015). Returns the
+    // sum before scaling.
+    float normalizeIncoming(int post, float total) {
+        if (!valid(post)) return 0.0f;
+        float sum = 0.0f;
+        for (int s : in_[post]) if (syn_[s].plastic && !syn_[s].inhibitory) sum += syn_[s].weight;
+        if (sum > 0.0f)
+            for (int s : in_[post])
+                if (syn_[s].plastic && !syn_[s].inhibitory) syn_[s].setWeight(syn_[s].weight * total / sum, cfg_);
+        return sum;
+    }
+
+    void enableAdaptiveThreshold(bool on) { cfg_.adaptive_threshold = on; }
+    float getThreshold(int id) const { return valid(id) ? neurons_[id].theta : 0.0f; }
+
     // External input for the next step only (adds up if called twice).
     void stimulate(int id, float current) { if (valid(id)) ext_soma_[id] += current; }
     void stimulateApical(int id, float current) { if (valid(id)) ext_apical_[id] += current; }
@@ -138,14 +160,14 @@ public:
                 float amount = syn.weight * cfg_.syn_gain * syn.onPreSpike(t, cfg_) * charge;
                 deliver(syn, amount);
                 // pre after post: depression, proportional to w
-                if (cfg_.learning && !syn.inhibitory && post_trace_[syn.post] > 0.0f)
+                if (cfg_.learning && syn.plastic && !syn.inhibitory && post_trace_[syn.post] > 0.0f)
                     syn.applyStdp(-cfg_.a_minus * post_trace_[syn.post] * syn.weight, t, cfg_);
             }
             if (cfg_.learning) {
                 for (int s : in_[i]) {
                     UnifiedSynapse& syn = syn_[s];
                     // post after pre: potentiation, proportional to (w_max - w)
-                    if (syn.alive && !syn.inhibitory && pre_trace_[syn.pre] > 0.0f)
+                    if (syn.alive && syn.plastic && !syn.inhibitory && pre_trace_[syn.pre] > 0.0f)
                         syn.applyStdp(cfg_.a_plus * pre_trace_[syn.pre] * (cfg_.w_max - syn.weight), t, cfg_);
                 }
             }
@@ -160,7 +182,8 @@ public:
         // 4. Reward: convert eligibility into weight change.
         if (pending_reward_ != 0.0f) {
             if (cfg_.reward_modulation)
-                for (auto& syn : syn_) if (syn.alive && !syn.inhibitory) syn.applyReward(pending_reward_, t, cfg_);
+                for (auto& syn : syn_)
+                    if (syn.alive && syn.plastic && !syn.inhibitory) syn.applyReward(pending_reward_, t, cfg_);
             pending_reward_ = 0.0f;
         }
 
@@ -341,7 +364,10 @@ private:
         // Prune: excitatory synapses that learning has driven below the floor.
         bool removed = false;
         for (auto& s : syn_) {
-            if (s.alive && !s.inhibitory && s.weight < cfg_.prune_below) { s.alive = false; removed = true; }
+            if (s.alive && s.plastic && !s.inhibitory && s.weight < cfg_.prune_below) {
+                s.alive = false;
+                removed = true;
+            }
         }
         if (!removed) return;
         std::vector<UnifiedSynapse> kept;
