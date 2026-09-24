@@ -10,7 +10,7 @@ make test       # 57 pass/fail checks
 ./demo          # walk-through; every number printed is measured
 ```
 
-This is a repaired version of an earlier draft whose demo printed ✓ marks
+This is a repaired version of an earlier draft ([original/](original/)) whose demo printed ✓ marks
 over zero spikes. What was wrong and how it was fixed is at the end.
 
 ## Use
