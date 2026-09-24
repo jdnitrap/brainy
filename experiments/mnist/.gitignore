@@ -2,4 +2,5 @@ data
 mnist_stdp
 prototype_readout
 results/sweep*/
-results/scale400/
+results/scale400/*_test_predictions.csv
+results/scale400/*_train.csv

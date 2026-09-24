@@ -1,0 +1,17 @@
+MNIST: 60000 train, 10000 test. Network: 784 inputs, 400 excitatory, 400 inhibitory, learning on
+synapses: 473600
+  trained    500      48s  312.8 spikes/image from 226.0 neurons  400/400 neurons used  theta 15.461
+  trained   1000      97s  101.6 spikes/image from 65.8 neurons  400/400 neurons used  theta 20.145
+  trained   1500     150s  61.5 spikes/image from 35.8 neurons  400/400 neurons used  theta 22.771
+  trained   2000     202s  50.3 spikes/image from 26.9 neurons  400/400 neurons used  theta 24.682
+  trained   2500     252s  35.1 spikes/image from 18.2 neurons  399/400 neurons used  theta 25.660
+  trained   3000     305s  38.6 spikes/image from 20.4 neurons  399/400 neurons used  theta 26.677
+  trained   3500     358s  36.9 spikes/image from 18.4 neurons  399/400 neurons used  theta 27.522
+  trained   4000     423s  32.8 spikes/image from 16.2 neurons  400/400 neurons used  theta 28.125
+  trained   4500     484s  29.7 spikes/image from 13.1 neurons  397/400 neurons used  theta 28.568
+  trained   5000     544s  28.1 spikes/image from 12.5 neurons  397/400 neurons used  theta 28.940
+
+accuracy 73.90% on 1000 test images (0 with no spikes)
+nearest-centroid baseline 75.80%
+neurons per digit: 0:45 1:11 2:26 3:98 4:15 5:32 6:26 7:20 8:111 9:16  (silent 0)
+time 747 s (training 544 s)

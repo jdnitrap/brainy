@@ -151,7 +151,21 @@ The learned weights show why:
   less, several neurons learn from the same image, and the digits that
   drive neurons hardest (lots of ink: 0 and 8) collect most of them.
 
-(A test of this explanation is in progress.)
+**Test of this explanation:** three short 400-neuron runs (5,000 training
+images, scored on the tuning images 0-999) with larger threshold steps.
+Results in `results/scale400/`.
+
+| Threshold step | Neurons per image | Neurons labelled 8 / 3 / 1 | Accuracy |
+|---|---|---|---|
+| 0.02 (as in the final run) | 21.6 | 164 / 103 / 5 | 74.2% |
+| 0.04 | 12.5 | 111 / 98 / 11 | 73.9% |
+| **0.08** (4x, scaled with network size) | **6.9** | 109 / 44 / 16 | **78.9%** |
+
+Scaling the step with the number of neurons sharpens the competition and
+spreads neurons more evenly across digits. Accuracy rises 4.7 points, which
+is borderline on 1,000 images (±2.6 points each), though every run was
+scored on the same images. "8" still collects too many neurons. A full
+60,000-image run at 0.08 was not done (about 2.5 hours).
 
 ### 6. Compared with the paper
 
@@ -185,12 +199,15 @@ Training on real data found one real bug and three missing pieces in
 - Settings were tuned on test images 0-999. The headline numbers therefore
   use only test images 1,000-9,999. A cleaner protocol would tune on a
   validation split of the training set.
-- One training pass, two seeds for 100 neurons, one seed for 400.
+- One training pass, two seeds for 100 neurons, one seed for 400. The
+  400-neuron network reuses the 100-neuron settings, which section 5 shows
+  are not right for it.
 - The spiking readout is random (Poisson input), so repeating the test
   gives slightly different predictions. The two seeds give a sense of the
   spread.
 - One CPU core. Simulating 1 ms per step with 784 inputs is the cost: about
-  45 minutes to train 100 neurons, about 100 minutes for 400.
+  45 minutes to train 100 neurons, and about 105 minutes to train plus 25
+  to test 400.
 
 ## Next steps (not done)
 
@@ -199,7 +216,9 @@ Training on real data found one real bug and three missing pieces in
    before an output spike. It targets the 11-point learning gap.
 3. Show each test image several times and add up the spikes. This targets
    the 8-point readout gap at the cost of speed.
-4. Larger networks (1,600 neurons) need a faster step. Most time is spent
+4. Rerun 400 neurons on the full training set with the threshold step
+   scaled to 0.08 (section 5).
+5. Larger networks (1,600 neurons) need a faster step. Most time is spent
    drawing 784 random numbers per ms for the inputs.
 
 ## Reproduce
