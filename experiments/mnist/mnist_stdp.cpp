@@ -131,6 +131,8 @@ struct Params {
     float theta_plus = 0.002f;    // adaptive threshold step per spike
     float a_plus = 0.01f, a_minus = 0.003f;  // STDP
     float tau_inh = 20.0f;        // inhibitory PSC decay (ms): slower than excitation
+    bool normalize_input = false; // scale each image to the same total brightness
+    float mean_ink = 0.0f;        // average pixel sum of the training set (set in main)
 };
 
 class DigitNet {
@@ -176,6 +178,12 @@ public:
         net.config().theta_plus = learn ? p.theta_plus : 0.0f;  // thresholds are frozen outside training
         std::vector<int> counts(p.neurons, 0);
         float boost = 1.0f;
+        if (p.normalize_input) {
+            float ink = 0.0f;
+            for (int i = 0; i < kIn; ++i) ink += img[i];
+            if (ink > 0.0f) boost = p.mean_ink / ink;
+        }
+        const float base_boost = boost;
         std::uniform_real_distribution<float> u01(0.0f, 1.0f);
         for (int attempt = 0; attempt < 5; ++attempt) {
             std::fill(counts.begin(), counts.end(), 0);
@@ -189,7 +197,7 @@ public:
                     if (net.getNeuronSpiked(exc(k))) { ++counts[k]; ++total; }
             }
             if (total >= p.min_spikes) break;
-            boost += 0.5f;
+            boost += 0.5f * base_boost;
         }
         if (learn)
             for (int k = 0; k < p.neurons; ++k) net.normalizeIncoming(exc(k), p.w_total);
@@ -241,6 +249,7 @@ int main(int argc, char** argv) {
         else if (a == "--w-total") p.w_total = std::stof(next());
         else if (a == "--w-inh") p.w_inh = std::stof(next());
         else if (a == "--gain") p.gain = std::stof(next());
+        else if (a == "--normalize-input") p.normalize_input = true;
         else if (a == "--tau-inh") p.tau_inh = std::stof(next());
         else if (a == "--a-plus") p.a_plus = std::stof(next());
         else if (a == "--a-minus") p.a_minus = std::stof(next());
@@ -253,6 +262,9 @@ int main(int argc, char** argv) {
     p.train = std::min<int>(p.train, (int)tr.images.size());
     p.label = std::min<int>(p.label, (int)tr.images.size());
     p.test = std::min<int>(p.test, (int)te.images.size());
+    double ink = 0;
+    for (auto& im : tr.images) for (uint8_t v : im) ink += v;
+    p.mean_ink = (float)(ink / tr.images.size());
 
     std::printf("MNIST: %zu train, %zu test. Network: 784 inputs, %d excitatory, %d inhibitory, learning %s\n",
                 tr.images.size(), te.images.size(), p.neurons, p.neurons, p.learning ? "on" : "off");
