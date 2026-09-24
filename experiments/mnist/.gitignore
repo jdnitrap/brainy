@@ -2,4 +2,4 @@ data
 mnist_stdp
 prototype_readout
 results/sweep*/
-results/final/
+results/scale400/

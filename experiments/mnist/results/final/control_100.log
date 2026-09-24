@@ -1,0 +1,7 @@
+MNIST: 60000 train, 10000 test. Network: 784 inputs, 100 excitatory, 100 inhibitory, learning off
+synapses: 88400
+
+accuracy 20.22% on 10000 test images (0 with no spikes)
+nearest-centroid baseline 81.98%
+neurons per digit: 0:66 1:0 2:8 3:6 4:1 5:0 6:8 7:2 8:9 9:0  (silent 0)
+time 329 s (training 0 s)

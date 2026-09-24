@@ -1,0 +1,314 @@
+{
+  "stdp_100": {
+    "neurons": 100,
+    "learning": true,
+    "train_images": 60000,
+    "acc_all": 0.699,
+    "ci_all": [
+      0.6899346059860778,
+      0.7079125570477709
+    ],
+    "acc_heldout": 0.7014444444444444,
+    "ci_heldout": [
+      0.6919055030709281,
+      0.7108114883075075
+    ],
+    "n_heldout": 9000,
+    "nearest_centroid_accuracy": 0.8198,
+    "per_digit": [
+      0.8510204081632653,
+      0.9911894273127754,
+      0.5562015503875969,
+      0.4752475247524752,
+      0.6690427698574338,
+      0.7320627802690582,
+      0.9039665970772442,
+      0.8618677042801557,
+      0.3891170431211499,
+      0.5312190287413281
+    ],
+    "neurons_per_digit": [
+      13,
+      7,
+      12,
+      9,
+      6,
+      13,
+      12,
+      9,
+      12,
+      7
+    ],
+    "silent_neurons": 0,
+    "mean_test_spikes": 14.78,
+    "test_no_spikes": 0,
+    "train_seconds": 2665.6,
+    "total_seconds": 3155.4,
+    "top_confusions": [
+      {
+        "true": 3,
+        "predicted": 5,
+        "count": 285
+      },
+      {
+        "true": 9,
+        "predicted": 7,
+        "count": 276
+      },
+      {
+        "true": 2,
+        "predicted": 1,
+        "count": 202
+      },
+      {
+        "true": 4,
+        "predicted": 9,
+        "count": 201
+      },
+      {
+        "true": 8,
+        "predicted": 1,
+        "count": 185
+      },
+      {
+        "true": 9,
+        "predicted": 4,
+        "count": 120
+      }
+    ]
+  },
+  "stdp_100_seed2": {
+    "neurons": 100,
+    "learning": true,
+    "train_images": 60000,
+    "acc_all": 0.7016,
+    "ci_all": [
+      0.6925558745104252,
+      0.7104892916585392
+    ],
+    "acc_heldout": 0.7042222222222222,
+    "ci_heldout": [
+      0.6947075494134275,
+      0.7135626271743082
+    ],
+    "n_heldout": 9000,
+    "nearest_centroid_accuracy": 0.8204,
+    "per_digit": [
+      0.8530612244897959,
+      0.9850220264317181,
+      0.7761627906976745,
+      0.7504950495049505,
+      0.48676171079429736,
+      0.57847533632287,
+      0.8100208768267223,
+      0.8764591439688716,
+      0.45071868583162217,
+      0.38949454905847375
+    ],
+    "neurons_per_digit": [
+      12,
+      6,
+      12,
+      15,
+      9,
+      10,
+      9,
+      7,
+      14,
+      6
+    ],
+    "silent_neurons": 0,
+    "mean_test_spikes": 15.35,
+    "test_no_spikes": 0,
+    "train_seconds": 2665.0,
+    "total_seconds": 3150.1,
+    "top_confusions": [
+      {
+        "true": 9,
+        "predicted": 7,
+        "count": 355
+      },
+      {
+        "true": 4,
+        "predicted": 9,
+        "count": 318
+      },
+      {
+        "true": 8,
+        "predicted": 1,
+        "count": 206
+      },
+      {
+        "true": 9,
+        "predicted": 4,
+        "count": 148
+      },
+      {
+        "true": 5,
+        "predicted": 3,
+        "count": 145
+      },
+      {
+        "true": 2,
+        "predicted": 1,
+        "count": 111
+      }
+    ]
+  },
+  "stdp_400": {
+    "neurons": 400,
+    "learning": true,
+    "train_images": 60000,
+    "acc_all": 0.761,
+    "ci_all": [
+      0.7525419111180613,
+      0.7692576343685444
+    ],
+    "acc_heldout": 0.7641111111111111,
+    "ci_heldout": [
+      0.7552282146988885,
+      0.772768635001355
+    ],
+    "n_heldout": 9000,
+    "nearest_centroid_accuracy": 0.8198,
+    "per_digit": [
+      0.7989795918367347,
+      0.9911894273127754,
+      0.6608527131782945,
+      0.8257425742574257,
+      0.6364562118126272,
+      0.4899103139013453,
+      0.9530271398747391,
+      0.8015564202334631,
+      0.6036960985626283,
+      0.7918731417244796
+    ],
+    "neurons_per_digit": [
+      160,
+      15,
+      20,
+      28,
+      15,
+      17,
+      14,
+      15,
+      94,
+      22
+    ],
+    "silent_neurons": 0,
+    "mean_test_spikes": 78.95,
+    "test_no_spikes": 0,
+    "train_seconds": 6372.7,
+    "total_seconds": 7887.4,
+    "top_confusions": [
+      {
+        "true": 4,
+        "predicted": 9,
+        "count": 302
+      },
+      {
+        "true": 5,
+        "predicted": 3,
+        "count": 231
+      },
+      {
+        "true": 8,
+        "predicted": 3,
+        "count": 174
+      },
+      {
+        "true": 7,
+        "predicted": 9,
+        "count": 120
+      },
+      {
+        "true": 5,
+        "predicted": 8,
+        "count": 88
+      },
+      {
+        "true": 2,
+        "predicted": 1,
+        "count": 83
+      }
+    ]
+  },
+  "control_100": {
+    "neurons": 100,
+    "learning": false,
+    "train_images": 0,
+    "acc_all": 0.2022,
+    "ci_all": [
+      0.19444288432374895,
+      0.2101858335080088
+    ],
+    "acc_heldout": 0.20277777777777778,
+    "ci_heldout": [
+      0.194598577483579,
+      0.21121060512132162
+    ],
+    "n_heldout": 9000,
+    "nearest_centroid_accuracy": 0.8198,
+    "per_digit": [
+      0.08061224489795918,
+      0.0,
+      0.10755813953488372,
+      0.4277227722772277,
+      0.6211812627291242,
+      0.0,
+      0.3674321503131524,
+      0.36964980544747084,
+      0.059548254620123205,
+      0.0
+    ],
+    "neurons_per_digit": [
+      66,
+      0,
+      8,
+      6,
+      1,
+      0,
+      8,
+      2,
+      9,
+      0
+    ],
+    "silent_neurons": 0,
+    "mean_test_spikes": 75.89,
+    "test_no_spikes": 0,
+    "train_seconds": 0.0,
+    "total_seconds": 329.1,
+    "top_confusions": [
+      {
+        "true": 1,
+        "predicted": 4,
+        "count": 530
+      },
+      {
+        "true": 9,
+        "predicted": 4,
+        "count": 494
+      },
+      {
+        "true": 7,
+        "predicted": 4,
+        "count": 442
+      },
+      {
+        "true": 6,
+        "predicted": 4,
+        "count": 418
+      },
+      {
+        "true": 8,
+        "predicted": 4,
+        "count": 410
+      },
+      {
+        "true": 2,
+        "predicted": 4,
+        "count": 405
+      }
+    ]
+  }
+}

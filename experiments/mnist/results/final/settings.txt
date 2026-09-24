@@ -1,0 +1,1 @@
+--train 60000 --label 10000 --test 10000 --gain 100 --tau-inh 20 --w-total 1.5 --w-inh 1 --a-plus 3e-4 --a-minus 9e-5 --theta-plus 2e-2

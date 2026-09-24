@@ -13,7 +13,7 @@ spike-timing-dependent plasticity*.
 |---|---|---|
 | **brainy SNN, 100 neurons, STDP** | **70.1%** | 69.2-71.1 |
 | brainy SNN, 100 neurons, STDP, second seed | 70.4% | 69.5-71.4 |
-| brainy SNN, 400 neurons, STDP | (run in progress) | |
+| **brainy SNN, 400 neurons, STDP** | **76.4%** | 75.5-77.3 |
 | Same network, learning off (random weights) | 20.3% | 19.5-21.1 |
 | Nearest class mean on raw pixels (uses labels) | 82.0% | |
 | Chance | 10.0% | |
@@ -79,20 +79,20 @@ Full settings: [results/final/settings.txt](results/final/settings.txt).
 Three measurements on the same test images (1,000-9,999) separate *what was
 learned* from *how it is read out*:
 
-| | Accuracy |
-|---|---|
-| 100 ideal prototypes: k-means on raw pixels, nearest prototype | 88.9% |
-| brainy's 100 learned prototypes, nearest prototype, no spikes | 78.1% (seed 2: 77.1%) |
-| brainy's spiking network | 70.1% (seed 2: 70.4%) |
+| | 100 neurons | 400 neurons |
+|---|---|---|
+| Ideal prototypes: k-means on raw pixels, nearest prototype | 88.9% | 93.6% |
+| brainy's learned prototypes, nearest prototype, no spikes | 78.1% (seed 2: 77.1%) | 84.5% |
+| brainy's spiking network | 70.1% (seed 2: 70.4%) | 76.4% |
 
 (`prototype_readout.cpp`: cosine similarity; each prototype labelled by
 majority vote on the same 10,000 labelling images.)
 
-- **About 11 points are lost in learning.** k-means places its 100
+- **About 10 points are lost in learning** (11 at 100 neurons, 9 at 400). k-means places its 100
   prototypes to cover the data as well as possible. STDP with competition
   gets clean prototypes but a less useful spread: for example, "8" has 12
   neurons and still scores only 39%.
-- **About 8 points are lost in the spiking readout.** The winner is decided
+- **About 8 points are lost in the spiking readout**, at both sizes. The winner is decided
   by a race between noisy Poisson spike trains, not by exact similarity. On
   average only 2 neurons answer an image, so one unlucky race changes the
   answer.
@@ -133,7 +133,25 @@ majority vote on the same 10,000 labelling images.)
 
 ### 5. Scaling to 400 neurons
 
-(Run in progress.)
+With the same settings, 400 neurons reach **76.4%**, 6 points above 100
+neurons. That is less than the size should allow: k-means gains 4.7
+points going from 100 to 400 prototypes, and the paper gains 4.1 points.
+The learned weights show why:
+
+![Learned receptive fields, 400 neurons](results/final/stdp_400_weights.png)
+
+- **Duplicated big-ink digits:** 160 of the 400 neurons are labelled "0"
+  and 94 are labelled "8", many of them blurry. Every other digit gets
+  14-28 neurons.
+- **Weaker competition:** about 14 neurons answer each image, against 2 at
+  100 neurons.
+- **The cause is the threshold step.** With 400 neurons each one wins a
+  quarter as often, so the same threshold step (0.02) raises its threshold
+  a quarter as fast: the mean ends at 27 against 54. Neurons then compete
+  less, several neurons learn from the same image, and the digits that
+  drive neurons hardest (lots of ink: 0 and 8) collect most of them.
+
+(A test of this explanation is in progress.)
 
 ### 6. Compared with the paper
 
