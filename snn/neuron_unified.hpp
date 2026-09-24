@@ -36,6 +36,7 @@ struct SnnConfig {
     // ---- synapses ----
     float syn_gain = 30.0f;       // current of a weight-1 synapse at the peak of its PSC
     float tau_syn = 5.0f;         // PSC decay time (ms)
+    float tau_syn_inh = 5.0f;     // PSC decay time of inhibitory synapses (ms)
     float w_max = 1.0f;
 
     // ---- STDP (pair based, all-to-all, soft bounds) ----

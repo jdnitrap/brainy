@@ -130,6 +130,7 @@ struct Params {
     float gain = 100.0f;          // current of a weight-1 synapse (config().syn_gain)
     float theta_plus = 0.002f;    // adaptive threshold step per spike
     float a_plus = 0.01f, a_minus = 0.003f;  // STDP
+    float tau_inh = 20.0f;        // inhibitory PSC decay (ms): slower than excitation
 };
 
 class DigitNet {
@@ -152,6 +153,7 @@ public:
         c.theta_plus = p.theta_plus;
         c.tau_theta = 1e7f;
         c.syn_gain = p.gain;
+        c.tau_syn_inh = p.tau_inh;
         for (int i = 0; i < kIn; ++i) net.addNeuron(i, NeuronType::REGULAR_SPIKING);
         for (int k = 0; k < p.neurons; ++k) {
             net.addNeuron(exc(k), NeuronType::REGULAR_SPIKING);
@@ -239,6 +241,7 @@ int main(int argc, char** argv) {
         else if (a == "--w-total") p.w_total = std::stof(next());
         else if (a == "--w-inh") p.w_inh = std::stof(next());
         else if (a == "--gain") p.gain = std::stof(next());
+        else if (a == "--tau-inh") p.tau_inh = std::stof(next());
         else if (a == "--a-plus") p.a_plus = std::stof(next());
         else if (a == "--a-minus") p.a_minus = std::stof(next());
         else if (a == "--theta-plus") p.theta_plus = std::stof(next());

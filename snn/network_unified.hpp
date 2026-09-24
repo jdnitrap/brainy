@@ -135,9 +135,11 @@ public:
 
         // 2. Synaptic currents decay (PSC) or were a one-step pulse (no PSC).
         float keep = cfg_.psc ? std::exp(-1.0f / cfg_.tau_syn) : 0.0f;
+        float keep_inh = cfg_.psc ? std::exp(-1.0f / cfg_.tau_syn_inh) : 0.0f;
         float charge = cfg_.psc ? 1.0f : 1.0f / (1.0f - std::exp(-1.0f / cfg_.tau_syn));
+        float charge_inh = cfg_.psc ? 1.0f : 1.0f / (1.0f - std::exp(-1.0f / cfg_.tau_syn_inh));
         for (int i = 0; i < n; ++i) {
-            syn_exc_soma_[i] *= keep; syn_inh_soma_[i] *= keep;
+            syn_exc_soma_[i] *= keep; syn_inh_soma_[i] *= keep_inh;
             syn_basal_[i] *= keep; syn_apical_[i] *= keep;
         }
         float decay_plus = std::exp(-1.0f / cfg_.tau_plus);
@@ -157,7 +159,7 @@ public:
             for (int s : out_[i]) {
                 UnifiedSynapse& syn = syn_[s];
                 if (!syn.alive) continue;
-                float amount = syn.weight * cfg_.syn_gain * syn.onPreSpike(t, cfg_) * charge;
+                float amount = syn.weight * cfg_.syn_gain * syn.onPreSpike(t, cfg_) * (syn.inhibitory ? charge_inh : charge);
                 deliver(syn, amount);
                 // pre after post: depression, proportional to w
                 if (cfg_.learning && syn.plastic && !syn.inhibitory && post_trace_[syn.post] > 0.0f)
