@@ -1,3 +1,4 @@
 data
 mnist_stdp
 results/sweep*/
+results/final/
