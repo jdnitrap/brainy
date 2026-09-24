@@ -129,6 +129,7 @@ struct Params {
     float w_inh = 1.0f;           // inhibitory -> other excitatory
     float gain = 100.0f;          // current of a weight-1 synapse (config().syn_gain)
     float theta_plus = 0.002f;    // adaptive threshold step per spike
+    float a_plus = 0.01f, a_minus = 0.003f;  // STDP
 };
 
 class DigitNet {
@@ -146,8 +147,8 @@ public:
         c.homeostasis = false;
         c.adaptive_threshold = true;
         c.learning = p.learning;
-        c.a_plus = 0.01f;
-        c.a_minus = 0.003f;
+        c.a_plus = p.a_plus;
+        c.a_minus = p.a_minus;
         c.theta_plus = p.theta_plus;
         c.tau_theta = 1e7f;
         c.syn_gain = p.gain;
@@ -238,6 +239,8 @@ int main(int argc, char** argv) {
         else if (a == "--w-total") p.w_total = std::stof(next());
         else if (a == "--w-inh") p.w_inh = std::stof(next());
         else if (a == "--gain") p.gain = std::stof(next());
+        else if (a == "--a-plus") p.a_plus = std::stof(next());
+        else if (a == "--a-minus") p.a_minus = std::stof(next());
         else if (a == "--theta-plus") p.theta_plus = std::stof(next());
         else if (a == "--rate") p.max_rate = std::stof(next()) / 1000.0f;
         else { std::fprintf(stderr, "unknown option %s\n", a.c_str()); return 2; }
