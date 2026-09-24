@@ -100,6 +100,20 @@ static void test_neurons() {
         finite = finite && std::isfinite(big.getNeuronVoltage(0));
     }
     CHECK(finite, "huge input never produces inf/NaN");
+
+    for (float inh : {-50.0f, -200.0f, -5000.0f}) {
+        auto net = quiet(1);
+        int spikes = 0;
+        float low = 0.0f;
+        for (int t = 0; t < 500; ++t) {
+            net.stimulate(0, inh);
+            net.step();
+            spikes += net.getNeuronSpiked(0);
+            low = std::fmin(low, net.getNeuronVoltage(0));
+        }
+        CHECK(spikes == 0 && low >= -100.0f, "strong inhibitory input %.0f never makes a spike (lowest %.0f mV)", inh,
+              low);
+    }
 }
 
 static void test_synapses() {

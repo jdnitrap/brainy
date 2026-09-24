@@ -99,6 +99,7 @@ public:
     float v = -70.0f, u = -14.0f;
     float threshold = 30.0f;
     float resting = -70.0f;         // stable fixed point of the model for this b
+    float v_floor = -100.0f;
     int refractory_period = 2;
 
     // Phase 2 compartments (mV)
@@ -159,6 +160,10 @@ public:
             float du = a * (b * v - u);
             v += 0.5f * dv;
             u += 0.5f * du;
+            // Strong inhibition cannot pull the cell below the potassium
+            // reversal potential; without this bound the quadratic term makes
+            // Euler overshoot from very low v straight to a (false) spike.
+            v = std::max(v, v_floor);
             if (v >= threshold) spiked = true;
         }
         if (spiked) {
